@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { setAuth, setLoading } from './auth/authSlice';
 import Loading from './components/Loading';
@@ -50,7 +50,7 @@ const AuthWrapper = ({ children }) => {
       }
       logoutTimer.current = setTimeout(() => {
         console.log("Session expired, logging out automatically...");
-        logout({ logoutParams: { returnTo: window.location.origin + "/auth0" } });
+        logout({ logoutParams: { returnTo: window.location.origin + "/#/login" } });
       }, 300000);
     } else {
       if (logoutTimer.current) {
@@ -81,7 +81,7 @@ function App() {
   }
 
   return (
-    <BrowserRouter basename="/auth0">
+    <HashRouter>
       <div className={`${themeClass}`}>
         <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white transition-colors duration-300">
           <ThemeToggle />
@@ -89,7 +89,7 @@ function App() {
             domain={auth0Domain}
             clientId={auth0ClientId}
             authorizationParams={{
-              redirect_uri: window.location.origin + "/auth0/welcome",
+              redirect_uri: window.location.origin + "/#/welcome", // ✅ important for GitHub Pages
             }}
           >
             <AuthWrapper>
@@ -109,7 +109,7 @@ function App() {
           </Auth0Provider>
         </div>
       </div>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
