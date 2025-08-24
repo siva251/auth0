@@ -9,7 +9,6 @@ import Login from './components/Login';
 import Welcome from './components/Welcome';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Check for environment variables
 const auth0Domain = process.env.REACT_APP_AUTH0_DOMAIN;
 const auth0ClientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
 
@@ -22,57 +21,48 @@ const AuthWrapper = ({ children }) => {
 
   const logoutTimer = useRef(null);
 
-  // Sync Auth0 loading state to Redux
+  // Sync loading state
   useEffect(() => {
     dispatch(setLoading(isLoading));
   }, [isLoading, dispatch]);
 
-  // Sync Auth0 auth state to Redux
+  // Sync auth state
   useEffect(() => {
     if (!isLoading) {
       dispatch(setAuth({ isAuthenticated, user }));
     }
   }, [isLoading, isAuthenticated, user, dispatch]);
 
-  // Handle redirection and auto-logout timer
+  // Handle navigation + auto logout
   useEffect(() => {
     if (!isLoading && isAuthenticated && !isAuthenticatedFromRedux) {
-      dispatch(setAuth({ isAuthenticated, user }));
       navigate('/welcome');
     } else if (!isLoading && !isAuthenticated && isAuthenticatedFromRedux) {
-      dispatch(setAuth({ isAuthenticated: false, user: null }));
       navigate('/login');
     }
 
-    // Auto logout after 5 minutes (300000 ms)
+    // Auto logout after 5 min
     if (isAuthenticated) {
-      if (logoutTimer.current) {
-        clearTimeout(logoutTimer.current);
-      }
+      if (logoutTimer.current) clearTimeout(logoutTimer.current);
+
       logoutTimer.current = setTimeout(() => {
-        console.log("Session expired, logging out automatically...");
+        console.log("Session expired, logging out...");
         logout({
           logoutParams: {
-            returnTo: window.location.origin + "/auth0/#/login",
+            returnTo: "https://siva251.github.io/auth0/#/login", // ✅ matches allowed logout URL
           },
         });
       }, 300000);
     } else {
-      if (logoutTimer.current) {
-        clearTimeout(logoutTimer.current);
-      }
+      if (logoutTimer.current) clearTimeout(logoutTimer.current);
     }
 
     return () => {
-      if (logoutTimer.current) {
-        clearTimeout(logoutTimer.current);
-      }
+      if (logoutTimer.current) clearTimeout(logoutTimer.current);
     };
   }, [isLoading, isAuthenticated, user, dispatch, navigate, isAuthenticatedFromRedux, logout]);
 
-  if (isLoadingFromRedux) {
-    return <Loading />;
-  }
+  if (isLoadingFromRedux) return <Loading />;
 
   return <>{children}</>;
 };
@@ -94,7 +84,7 @@ function App() {
             domain={auth0Domain}
             clientId={auth0ClientId}
             authorizationParams={{
-              redirect_uri: window.location.origin + "/#/welcome",
+              redirect_uri: "https://siva251.github.io/auth0/#/welcome", // ✅ login success redirect
             }}
           >
             <AuthWrapper>
