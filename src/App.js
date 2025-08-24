@@ -85,6 +85,8 @@ function App() {
       <div className={`${themeClass}`}>
         <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white transition-colors duration-300">
           <ThemeToggle />
+          {console.log("Auth0 Redirect URI:", window.location.origin + "/auth0/welcome")}
+          {console.log("Auth0 Logout ReturnTo:", window.location.origin + "/auth0")}
           <Auth0Provider
             domain={auth0Domain}
             clientId={auth0ClientId}
@@ -92,8 +94,6 @@ function App() {
               redirect_uri: window.location.origin + "/#/welcome", // ✅ important for GitHub Pages
             }}
           >
-             {console.log("Auth0 Redirect URI:", window.location.origin + "/auth0/welcome")}
-  {console.log("Auth0 Logout ReturnTo:", window.location.origin + "/auth0")}
             <AuthWrapper>
               <Routes>
                 <Route path="/login" element={<Login />} />
