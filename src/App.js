@@ -92,6 +92,8 @@ function App() {
               redirect_uri: window.location.origin + "/#/welcome", // ✅ important for GitHub Pages
             }}
           >
+             {console.log("Auth0 Redirect URI:", window.location.origin + "/auth0/welcome")}
+  {console.log("Auth0 Logout ReturnTo:", window.location.origin + "/auth0")}
             <AuthWrapper>
               <Routes>
                 <Route path="/login" element={<Login />} />
