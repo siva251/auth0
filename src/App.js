@@ -12,8 +12,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 const auth0Domain = process.env.REACT_APP_AUTH0_DOMAIN;
 const auth0ClientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
 
-// ✅ Must exactly match Auth0 Allowed Logout URLs
-const LOGOUT_URL = "https://siva251.github.io/auth0/#/login";
+const LOGOUT_RETURN_URL = "https://siva251.github.io/auth0/#/login"; // ✅ Centralized
 
 const AuthWrapper = ({ children }) => {
   const dispatch = useDispatch();
@@ -38,7 +37,7 @@ const AuthWrapper = ({ children }) => {
     }
   }, [isLoading, isAuthenticated, user, dispatch]);
 
-  // Handle navigation and auto-logout
+  // Handle navigation + auto logout
   useEffect(() => {
     if (!isLoading && isAuthenticated && !isAuthenticatedFromRedux) {
       dispatch(setAuth({ isAuthenticated, user }));
@@ -54,7 +53,7 @@ const AuthWrapper = ({ children }) => {
       logoutTimer.current = setTimeout(() => {
         logout({
           logoutParams: {
-            returnTo: LOGOUT_URL,
+            returnTo: LOGOUT_RETURN_URL,
           },
         });
       }, 300000);
@@ -97,8 +96,7 @@ function App() {
             domain={auth0Domain}
             clientId={auth0ClientId}
             authorizationParams={{
-              // ✅ must match Auth0 Allowed Callback URLs
-              redirect_uri: "https://siva251.github.io/auth0/#/login",
+              redirect_uri: window.location.origin + "/auth0/#/login",
             }}
           >
             <AuthWrapper>
