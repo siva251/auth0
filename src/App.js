@@ -23,7 +23,7 @@ const AuthWrapper = ({ children }) => {
 
   const logoutTimer = useRef(null);
 
-  // Sync loading state
+  // Sync loading
   useEffect(() => {
     dispatch(setLoading(isLoading));
   }, [isLoading, dispatch]);
@@ -49,7 +49,8 @@ const AuthWrapper = ({ children }) => {
         logoutTimer.current = setTimeout(() => {
           logout({
             logoutParams: {
-              returnTo: "https://siva251.github.io/auth0",
+              // ✅ Corrected URL to match Auth0 Allowed Logout URL
+              returnTo: "https://siva251.github.io/auth0/#/login",
             },
           });
         }, 300000);
@@ -99,9 +100,7 @@ function App() {
             domain={auth0Domain}
             clientId={auth0ClientId}
             authorizationParams={{
-              // ✅ The redirect_uri should point to your app's base URL, not a specific route.
-              // Auth0 adds the state and code parameters after the hash.
-              redirect_uri: "https://siva251.github.io/auth0/",
+              redirect_uri: "https://siva251.github.io/auth0/#/login",
             }}
           >
             <AuthWrapper>
