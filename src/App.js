@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { HashRouter, Routes, Route, useNavigate } from "react-router-dom";
@@ -8,16 +9,20 @@ import ThemeToggle from "./components/ThemeToggle";
 import Login from "./components/Login";
 import Welcome from "./components/Welcome";
 import ProtectedRoute from "./components/ProtectedRoute";
+import NotFound from "./components/NotFound";
 
 const auth0Domain = process.env.REACT_APP_AUTH0_DOMAIN;
 const auth0ClientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
 
-const LOGOUT_RETURN_URL = "https://siva251.github.io/auth0/#/login"; // ✅ Centralized
+// Keep these EXACTLY in sync with your Auth0 dashboard
+const CALLBACK_URL = "https://siva251.github.io/auth0/#/login";
+const LOGOUT_RETURN_URL = "https://siva251.github.io/auth0/#/login";
 
 const AuthWrapper = ({ children }) => {
   const dispatch = useDispatch();
   const { isAuthenticated, user, isLoading, logout } = useAuth0();
   const navigate = useNavigate();
+
   const isAuthenticatedFromRedux = useSelector(
     (state) => state.auth.isAuthenticated
   );
@@ -25,7 +30,7 @@ const AuthWrapper = ({ children }) => {
 
   const logoutTimer = useRef(null);
 
-  // Sync loading
+  // Sync loading state
   useEffect(() => {
     dispatch(setLoading(isLoading));
   }, [isLoading, dispatch]);
@@ -37,7 +42,7 @@ const AuthWrapper = ({ children }) => {
     }
   }, [isLoading, isAuthenticated, user, dispatch]);
 
-  // Handle navigation + auto logout
+  // Navigation + auto-logout
   useEffect(() => {
     if (!isLoading && isAuthenticated && !isAuthenticatedFromRedux) {
       dispatch(setAuth({ isAuthenticated, user }));
@@ -52,9 +57,7 @@ const AuthWrapper = ({ children }) => {
       if (logoutTimer.current) clearTimeout(logoutTimer.current);
       logoutTimer.current = setTimeout(() => {
         logout({
-          logoutParams: {
-            returnTo: LOGOUT_RETURN_URL,
-          },
+          logoutParams: { returnTo: LOGOUT_RETURN_URL },
         });
       }, 300000);
     } else {
@@ -96,7 +99,8 @@ function App() {
             domain={auth0Domain}
             clientId={auth0ClientId}
             authorizationParams={{
-              redirect_uri: window.location.origin + "/auth0/#/login",
+              // Must be listed in Auth0 -> Allowed Callback URLs
+              redirect_uri: CALLBACK_URL,
             }}
           >
             <AuthWrapper>
@@ -111,6 +115,8 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+                {/* Catch-all 404 (keep last) */}
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </AuthWrapper>
           </Auth0Provider>
