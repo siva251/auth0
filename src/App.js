@@ -91,27 +91,28 @@ function App() {
         <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white transition-colors duration-300">
           <ThemeToggle />
           <Auth0Provider
-            domain={auth0Domain}
-            clientId={auth0ClientId}
-            authorizationParams={{
-              redirect_uri: "https://siva251.github.io/auth0/#/login", // ✅ always land on /login first
-            }}
-          >
-            <AuthWrapper>
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/" element={<Login />} />
-                <Route
-                  path="/welcome"
-                  element={
-                    <ProtectedRoute>
-                      <Welcome />
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
-            </AuthWrapper>
-          </Auth0Provider>
+  domain={auth0Domain}
+  clientId={auth0ClientId}
+  authorizationParams={{
+    redirect_uri: window.location.origin + "/auth0/#/login", 
+  }}
+>
+  <AuthWrapper>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<Login />} />
+      <Route
+        path="/welcome"
+        element={
+          <ProtectedRoute>
+            <Welcome />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
+  </AuthWrapper>
+</Auth0Provider>
+
         </div>
       </div>
     </HashRouter>
