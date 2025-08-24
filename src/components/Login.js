@@ -6,11 +6,11 @@ const Login = () => {
   const { loginWithRedirect, isLoading } = useAuth0();
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
+    <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
       <div className="w-full max-w-md">
-        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 transition-colors">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 transition-colors hover:shadow-2xl hover:scale-[1.01] duration-300">
           <div className="flex flex-col items-center text-center">
-            <div className="mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800">
+            <div className="mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800 transition-transform duration-300 hover:rotate-6 hover:scale-110">
               {/* lock icon */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -35,9 +35,23 @@ const Login = () => {
             <button
               onClick={() => loginWithRedirect()}
               disabled={isLoading}
-              className="w-full rounded-xl px-4 py-3 font-semibold bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 dark:focus:ring-offset-gray-900 transition"
+              className="relative overflow-hidden w-full rounded-xl px-4 py-3 font-semibold 
+                         bg-blue-600 text-white 
+                         hover:bg-blue-700 disabled:opacity-70 
+                         focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 
+                         dark:focus:ring-offset-gray-900 transition duration-300 group"
             >
-              {isLoading ? "Loading…" : "Continue with Auth0"}
+              {/* Shimmer layer */}
+              <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full 
+                              transition-transform duration-700 ease-in-out">
+                <span className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r 
+                                from-transparent via-white/40 to-transparent 
+                                skew-x-12"></span>
+              </span>
+
+              <span className="relative z-10">
+                {isLoading ? "Loading…" : "Continue with Auth0"}
+              </span>
             </button>
 
             <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
