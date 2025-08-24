@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { HashRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { setAuth, setLoading } from './auth/authSlice';
 import Loading from './components/Loading';
@@ -20,7 +20,6 @@ const AuthWrapper = ({ children }) => {
   const isAuthenticatedFromRedux = useSelector((state) => state.auth.isAuthenticated);
   const isLoadingFromRedux = useSelector((state) => state.auth.isLoading);
 
-  // Use a ref to store the timer, preventing it from being re-created on every render
   const logoutTimer = useRef(null);
 
   // Sync Auth0 loading state to Redux
@@ -51,7 +50,7 @@ const AuthWrapper = ({ children }) => {
       }
       logoutTimer.current = setTimeout(() => {
         console.log("Session expired, logging out automatically...");
-        logout({ logoutParams: { returnTo: window.location.origin } });
+        logout({ logoutParams: { returnTo: window.location.origin + "/auth0" } });
       }, 300000);
     } else {
       if (logoutTimer.current) {
@@ -82,7 +81,7 @@ function App() {
   }
 
   return (
-    <HashRouter>
+    <BrowserRouter basename="/auth0">
       <div className={`${themeClass}`}>
         <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white transition-colors duration-300">
           <ThemeToggle />
@@ -90,7 +89,7 @@ function App() {
             domain={auth0Domain}
             clientId={auth0ClientId}
             authorizationParams={{
-              redirect_uri: window.location.origin + "/#/welcome",
+              redirect_uri: window.location.origin + "/auth0/welcome",
             }}
           >
             <AuthWrapper>
@@ -110,7 +109,7 @@ function App() {
           </Auth0Provider>
         </div>
       </div>
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 
