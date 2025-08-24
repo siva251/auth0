@@ -1,33 +1,20 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 
 const Login = () => {
-  const { loginWithRedirect, logout, isAuthenticated, isLoading } = useAuth0();
-  const { isAuthenticated: isAuthenticatedFromRedux } = useSelector((state) => state.auth);
+  const { loginWithRedirect, isLoading } = useAuth0();
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
-  // This useEffect will run when the component mounts.
-  // If the user is authenticated, it will immediately log them out.
-  useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      console.log('User is authenticated, logging out to show Auth0 login page.');
-      logout({
-        logoutParams: {
-          returnTo: window.location.origin + '/auth0/#/login'
-        }
-      });
-    }
-  }, [isAuthenticated, isLoading, logout]);
+  // Redirect to Welcome page if the user is already authenticated
+  if (isAuthenticated) {
+    return <Navigate to="/welcome" />;
+  }
 
   // Handle Auth0's loading state
   if (isLoading) {
     return null; // Or a loading spinner, handled in App.jsx
-  }
-
-  // Redirect to Welcome page if the user is already authenticated from Redux
-  if (isAuthenticatedFromRedux) {
-    return <Navigate to="/welcome" />;
   }
 
   return (
