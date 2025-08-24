@@ -91,7 +91,7 @@ function App() {
             domain={auth0Domain}
             clientId={auth0ClientId}
             authorizationParams={{
-              redirect_uri: "https://siva251.github.io/auth0/#/welcome",
+              redirect_uri: "https://siva251.github.io/auth0/",
             }}
           >
             <AuthWrapper>
