@@ -91,7 +91,7 @@ function App() {
             domain={auth0Domain}
             clientId={auth0ClientId}
             authorizationParams={{
-              redirect_uri: window.location.origin + "/#/welcome", // ✅ important for GitHub Pages
+              redirect_uri: "https://siva251.github.io/auth0/welcome",
             }}
           >
             <AuthWrapper>
