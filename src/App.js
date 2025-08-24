@@ -13,10 +13,9 @@ import NotFound from "./components/NotFound";
 
 const auth0Domain = process.env.REACT_APP_AUTH0_DOMAIN;
 const auth0ClientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
+const CALLBACK_URL = process.env.REACT_APP_CALLBACK_URL;
+const LOGOUT_RETURN_URL = process.env.REACT_APP_LOGOUT_RETURN_URL;
 
-// Keep these EXACTLY in sync with your Auth0 dashboard
-const CALLBACK_URL = "https://siva251.github.io/auth0/#/login";
-const LOGOUT_RETURN_URL = "https://siva251.github.io/auth0/#/login";
 
 const AuthWrapper = ({ children }) => {
   const dispatch = useDispatch();
@@ -99,7 +98,6 @@ function App() {
             domain={auth0Domain}
             clientId={auth0ClientId}
             authorizationParams={{
-              // Must be listed in Auth0 -> Allowed Callback URLs
               redirect_uri: CALLBACK_URL,
             }}
           >

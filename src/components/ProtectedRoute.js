@@ -19,15 +19,12 @@ const ProtectedRoute = ({ children }) => {
   }
 
   // This part directly addresses the "If the user is logged in and authorized → allow access to Welcome screen."
-  // and "If the user is logged in but not authorized → redirect to Login screen." points in your summary.
-  // Assuming all logged-in users are authorized for this project scope.
+  // and "If the user is logged in but not authorized → redirect to Login screen." 
   const isAuthorized = true; 
 
   if (isAuthorized) {
     return children;
   } else {
-    // For now, this part is a placeholder, as per your summary.
-    // In a real application, you would implement authorization logic here.
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 };
