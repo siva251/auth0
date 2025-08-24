@@ -20,40 +20,60 @@ const AuthWrapper = ({ children }) => {
     (state) => state.auth.isAuthenticated
   );
   const isLoadingFromRedux = useSelector((state) => state.auth.isLoading);
+
   const logoutTimer = useRef(null);
 
+  // Sync loading
   useEffect(() => {
     dispatch(setLoading(isLoading));
+  }, [isLoading, dispatch]);
+
+  // Sync auth state
+  useEffect(() => {
     if (!isLoading) {
       dispatch(setAuth({ isAuthenticated, user }));
-      // This is the core navigation logic after a login/auth check
-      if (isAuthenticated) {
-        navigate("/welcome");
-      }
     }
-  }, [isLoading, isAuthenticated, user, dispatch, navigate]);
+  }, [isLoading, isAuthenticated, user, dispatch]);
 
+  // Handle navigation and auto-logout
   useEffect(() => {
+    if (!isLoading && isAuthenticated && !isAuthenticatedFromRedux) {
+      dispatch(setAuth({ isAuthenticated, user }));
+      navigate("/welcome");
+    } else if (!isLoading && !isAuthenticated && isAuthenticatedFromRedux) {
+      dispatch(setAuth({ isAuthenticated: false, user: null }));
+      navigate("/login");
+    }
+
     // Auto logout after 5 minutes
     if (isAuthenticated) {
       if (logoutTimer.current) clearTimeout(logoutTimer.current);
       logoutTimer.current = setTimeout(() => {
         logout({
           logoutParams: {
-            returnTo: "https://siva251.github.io/auth0/#/login",
+            returnTo: "https://siva251.github.io/auth0/#/login", // ✅ EXACTLY what you added in Auth0 Allowed Logout URLs
           },
         });
       }, 300000);
     } else {
       if (logoutTimer.current) clearTimeout(logoutTimer.current);
     }
+
     return () => {
       if (logoutTimer.current) clearTimeout(logoutTimer.current);
     };
-  }, [isAuthenticated, logout]);
-
+  }, [
+    isLoading,
+    isAuthenticated,
+    user,
+    dispatch,
+    navigate,
+    isAuthenticatedFromRedux,
+    logout,
+  ]);
 
   if (isLoadingFromRedux) return <Loading />;
+
   return <>{children}</>;
 };
 
@@ -71,28 +91,28 @@ function App() {
         <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white transition-colors duration-300">
           <ThemeToggle />
           <Auth0Provider
-            domain={auth0Domain}
-            clientId={auth0ClientId}
-            authorizationParams={{
-              // ✅ This URL must EXACTLY match your Auth0 "Allowed Callback URLs"
-              redirect_uri: "https://siva251.github.io/auth0/#/login",
-            }}
-          >
-            <AuthWrapper>
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/" element={<Login />} />
-                <Route
-                  path="/welcome"
-                  element={
-                    <ProtectedRoute>
-                      <Welcome />
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
-            </AuthWrapper>
-          </Auth0Provider>
+  domain={auth0Domain}
+  clientId={auth0ClientId}
+  authorizationParams={{
+    redirect_uri: window.location.origin + "/auth0/#/login", 
+  }}
+>
+  <AuthWrapper>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<Login />} />
+      <Route
+        path="/welcome"
+        element={
+          <ProtectedRoute>
+            <Welcome />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
+  </AuthWrapper>
+</Auth0Provider>
+
         </div>
       </div>
     </HashRouter>
