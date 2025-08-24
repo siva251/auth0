@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { setAuth, setLoading } from './auth/authSlice';
 import Loading from './components/Loading';
@@ -37,35 +37,28 @@ const AuthWrapper = ({ children }) => {
 
   // Handle redirection and auto-logout timer
   useEffect(() => {
-    // Redirect after a successful login if not already done
     if (!isLoading && isAuthenticated && !isAuthenticatedFromRedux) {
       dispatch(setAuth({ isAuthenticated, user }));
       navigate('/welcome');
     } else if (!isLoading && !isAuthenticated && isAuthenticatedFromRedux) {
-      // In case the Auth0 session ends unexpectedly, log out from the app
       dispatch(setAuth({ isAuthenticated: false, user: null }));
       navigate('/login');
     }
 
-    // Set the auto-logout timer when authenticated
     if (isAuthenticated) {
-      // Clear any existing timer to prevent multiple timers running
       if (logoutTimer.current) {
         clearTimeout(logoutTimer.current);
       }
-      // Set a new timer for 5 minutes (300,000 milliseconds)
       logoutTimer.current = setTimeout(() => {
         console.log("Session expired, logging out automatically...");
         logout({ logoutParams: { returnTo: window.location.origin } });
       }, 300000);
     } else {
-      // Clear the timer if the user logs out manually
       if (logoutTimer.current) {
         clearTimeout(logoutTimer.current);
       }
     }
 
-    // Cleanup function to clear the timer when the component unmounts
     return () => {
       if (logoutTimer.current) {
         clearTimeout(logoutTimer.current);
@@ -84,13 +77,12 @@ function App() {
   const { isDarkMode } = useSelector((state) => state.theme);
   const themeClass = isDarkMode ? "dark" : "";
 
-  // Add a check to ensure environment variables are loaded
   if (!auth0Domain || !auth0ClientId) {
     return <div>Error: Auth0 environment variables are not set.</div>;
   }
 
   return (
-    <Router>
+    <HashRouter>
       <div className={`${themeClass}`}>
         <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white transition-colors duration-300">
           <ThemeToggle />
@@ -98,7 +90,7 @@ function App() {
             domain={auth0Domain}
             clientId={auth0ClientId}
             authorizationParams={{
-              redirect_uri: window.location.origin,
+              redirect_uri: window.location.origin + "/#/welcome",
             }}
           >
             <AuthWrapper>
@@ -118,7 +110,7 @@ function App() {
           </Auth0Provider>
         </div>
       </div>
-    </Router>
+    </HashRouter>
   );
 }
 
