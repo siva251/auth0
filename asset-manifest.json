@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/loginauth/static/css/main.f12ad0db.css",
-    "main.js": "/loginauth/static/js/main.2edfa01a.js",
-    "index.html": "/loginauth/index.html",
-    "main.f12ad0db.css.map": "/loginauth/static/css/main.f12ad0db.css.map",
-    "main.2edfa01a.js.map": "/loginauth/static/js/main.2edfa01a.js.map"
+    "main.css": "/auth0/static/css/main.f12ad0db.css",
+    "main.js": "/auth0/static/js/main.2edfa01a.js",
+    "index.html": "/auth0/index.html",
+    "main.f12ad0db.css.map": "/auth0/static/css/main.f12ad0db.css.map",
+    "main.2edfa01a.js.map": "/auth0/static/js/main.2edfa01a.js.map"
   },
   "entrypoints": [
     "static/css/main.f12ad0db.css",
