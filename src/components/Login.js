@@ -1,12 +1,11 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useSelector } from 'react-redux';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 const Login = () => {
  const { loginWithRedirect } = useAuth0();
  const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
- const location = useLocation();
 
  // Redirect to Welcome page if the user is already authenticated
  if (isAuthenticated) {
