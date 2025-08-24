@@ -44,13 +44,18 @@ const AuthWrapper = ({ children }) => {
       navigate('/login');
     }
 
+    // Auto logout after 5 minutes (300000 ms)
     if (isAuthenticated) {
       if (logoutTimer.current) {
         clearTimeout(logoutTimer.current);
       }
       logoutTimer.current = setTimeout(() => {
         console.log("Session expired, logging out automatically...");
-        logout({ logoutParams: { returnTo: window.location.origin + "/#/login" } });
+        logout({
+          logoutParams: {
+            returnTo: window.location.origin + "/#/login",
+          },
+        });
       }, 300000);
     } else {
       if (logoutTimer.current) {
@@ -85,13 +90,11 @@ function App() {
       <div className={`${themeClass}`}>
         <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white transition-colors duration-300">
           <ThemeToggle />
-          {console.log("Auth0 Redirect URI:", window.location.origin + "/auth0/welcome")}
-          {console.log("Auth0 Logout ReturnTo:", window.location.origin + "/auth0")}
           <Auth0Provider
             domain={auth0Domain}
             clientId={auth0ClientId}
             authorizationParams={{
-              redirect_uri: "https://siva251.github.io/auth0/",
+              redirect_uri: window.location.origin + "/#/welcome",
             }}
           >
             <AuthWrapper>
