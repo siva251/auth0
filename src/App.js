@@ -1,127 +1,66 @@
-import React, { useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { HashRouter, Routes, Route, useNavigate } from "react-router-dom";
-import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
-import { setAuth, setLoading } from "./auth/authSlice";
-import Loading from "./components/Loading";
-import ThemeToggle from "./components/ThemeToggle";
-import Login from "./components/Login";
-import Welcome from "./components/Welcome";
-import ProtectedRoute from "./components/ProtectedRoute";
+import React, { useEffect } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import { useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
 
-const auth0Domain = process.env.REACT_APP_AUTH0_DOMAIN;
-const auth0ClientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
+const Login = () => {
+  const { loginWithRedirect, logout, isAuthenticated, isLoading } = useAuth0();
+  const { isAuthenticated: isAuthenticatedFromRedux } = useSelector((state) => state.auth);
 
-const AuthWrapper = ({ children }) => {
-  const dispatch = useDispatch();
-  const { isAuthenticated, user, isLoading, logout } = useAuth0();
-  const navigate = useNavigate();
-  const isAuthenticatedFromRedux = useSelector(
-    (state) => state.auth.isAuthenticated
-  );
-  const isLoadingFromRedux = useSelector((state) => state.auth.isLoading);
-
-  const logoutTimer = useRef(null);
-
-  // Sync loading
+  // This useEffect will run when the component mounts.
+  // If the user is authenticated, it will immediately log them out.
   useEffect(() => {
-    dispatch(setLoading(isLoading));
-  }, [isLoading, dispatch]);
-
-  // Sync auth state
-  useEffect(() => {
-    if (!isLoading) {
-      dispatch(setAuth({ isAuthenticated, user }));
-    }
-  }, [isLoading, isAuthenticated, user, dispatch]);
-
-  // Handle navigation and auto-logout
-  useEffect(() => {
-    if (!isLoading) {
-      if (isAuthenticated) {
-        // User is authenticated, navigate to welcome
-        if (!isAuthenticatedFromRedux) {
-          dispatch(setAuth({ isAuthenticated, user }));
-          navigate("/welcome");
+    if (!isLoading && isAuthenticated) {
+      console.log('User is authenticated, logging out to show Auth0 login page.');
+      logout({
+        logoutParams: {
+          returnTo: window.location.origin + '/auth0/#/login'
         }
-        // Set auto-logout timer
-        if (logoutTimer.current) clearTimeout(logoutTimer.current);
-        logoutTimer.current = setTimeout(() => {
-          logout({
-            logoutParams: {
-              // ✅ Corrected URL to match Auth0 Allowed Logout URL
-              returnTo: "https://siva251.github.io/auth0/#/login",
-            },
-          });
-        }, 300000);
-      } else {
-        // User is not authenticated, clear Redux state and navigate to login
-        if (isAuthenticatedFromRedux) {
-          dispatch(setAuth({ isAuthenticated: false, user: null }));
-          navigate("/login");
-        }
-        // Clear any existing timer if user is not authenticated
-        if (logoutTimer.current) clearTimeout(logoutTimer.current);
-      }
+      });
     }
+  }, [isAuthenticated, isLoading, logout]);
 
-    return () => {
-      if (logoutTimer.current) clearTimeout(logoutTimer.current);
-    };
-  }, [
-    isLoading,
-    isAuthenticated,
-    user,
-    dispatch,
-    navigate,
-    isAuthenticatedFromRedux,
-    logout,
-  ]);
+  // Handle Auth0's loading state
+  if (isLoading) {
+    return null; // Or a loading spinner, handled in App.jsx
+  }
 
-  if (isLoadingFromRedux) return <Loading />;
-
-  return <>{children}</>;
-};
-
-function App() {
-  const { isDarkMode } = useSelector((state) => state.theme);
-  const themeClass = isDarkMode ? "dark" : "";
-
-  if (!auth0Domain || !auth0ClientId) {
-    return <div>Error: Auth0 environment variables are not set.</div>;
+  // Redirect to Welcome page if the user is already authenticated from Redux
+  if (isAuthenticatedFromRedux) {
+    return <Navigate to="/welcome" />;
   }
 
   return (
-    <HashRouter>
-      <div className={`${themeClass}`}>
-        <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white transition-colors duration-300">
-          <ThemeToggle />
-          <Auth0Provider
-            domain={auth0Domain}
-            clientId={auth0ClientId}
-            authorizationParams={{
-              redirect_uri: "https://siva251.github.io/auth0/#/login",
-            }}
+    <div className="flex items-center justify-center min-h-screen p-4
+                     bg-gray-100 dark:bg-gray-900">
+      <div className="relative bg-white dark:bg-gray-800 p-8 sm:p-12 rounded-2xl shadow-2xl
+                     w-full max-w-md mx-auto text-center
+                     transform transition-all duration-500 ease-in-out
+                     hover:scale-105 hover:shadow-3xl">
+        <div className="absolute top-0 left-0 w-full h-full bg-cover opacity-20 z-0"></div>
+
+        <div className="relative z-10">
+          <h2 className="text-4xl font-extrabold mb-3 text-transparent bg-clip-text
+                          bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+            Welcome Back!
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-8 text-lg font-light">
+            Please sign in to access your dashboard.
+          </p>
+          <button
+            onClick={() => loginWithRedirect()}
+            className="w-full py-3 rounded-full text-lg font-semibold tracking-wider
+                       bg-gradient-to-r from-blue-500 to-purple-500 text-white
+                       hover:from-blue-600 hover:to-purple-600 transition-all duration-300
+                       transform hover:scale-105 focus:outline-none focus:ring-2
+                       focus:ring-offset-2 focus:ring-purple-400 dark:focus:ring-gray-600"
           >
-            <AuthWrapper>
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/" element={<Login />} />
-                <Route
-                  path="/welcome"
-                  element={
-                    <ProtectedRoute>
-                      <Welcome />
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
-            </AuthWrapper>
-          </Auth0Provider>
+            Log In with Auth0
+          </button>
         </div>
       </div>
-    </HashRouter>
+    </div>
   );
-}
+};
 
-export default App;
+export default Login;
