@@ -35,7 +35,7 @@ const AuthWrapper = ({ children }) => {
     }
   }, [isLoading, isAuthenticated, user, dispatch]);
 
-  // Handle navigation and auto-logout
+  // Handle navigation + auto logout
   useEffect(() => {
     if (!isLoading && isAuthenticated && !isAuthenticatedFromRedux) {
       dispatch(setAuth({ isAuthenticated, user }));
@@ -45,13 +45,13 @@ const AuthWrapper = ({ children }) => {
       navigate("/login");
     }
 
-    // Auto logout after 5 minutes
+    // Auto logout after 5 min
     if (isAuthenticated) {
       if (logoutTimer.current) clearTimeout(logoutTimer.current);
       logoutTimer.current = setTimeout(() => {
         logout({
           logoutParams: {
-            returnTo: "https://siva251.github.io/auth0/#/login", // ✅ EXACTLY what you added in Auth0 Allowed Logout URLs
+            returnTo: "https://siva251.github.io/auth0/#/login", // ✅ EXACTLY matches Auth0 config
           },
         });
       }, 300000);
@@ -91,28 +91,27 @@ function App() {
         <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white transition-colors duration-300">
           <ThemeToggle />
           <Auth0Provider
-  domain={auth0Domain}
-  clientId={auth0ClientId}
-  authorizationParams={{
-    redirect_uri: window.location.origin + "/auth0/#/login", 
-  }}
->
-  <AuthWrapper>
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/" element={<Login />} />
-      <Route
-        path="/welcome"
-        element={
-          <ProtectedRoute>
-            <Welcome />
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
-  </AuthWrapper>
-</Auth0Provider>
-
+            domain={auth0Domain}
+            clientId={auth0ClientId}
+            authorizationParams={{
+              redirect_uri: "https://siva251.github.io/auth0/#/welcome", // ✅ Go to Welcome after login
+            }}
+          >
+            <AuthWrapper>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/" element={<Login />} />
+                <Route
+                  path="/welcome"
+                  element={
+                    <ProtectedRoute>
+                      <Welcome />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </AuthWrapper>
+          </Auth0Provider>
         </div>
       </div>
     </HashRouter>
