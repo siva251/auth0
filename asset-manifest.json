@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/loginauth/static/css/main.f12ad0db.css",
+    "main.js": "/loginauth/static/js/main.2edfa01a.js",
+    "index.html": "/loginauth/index.html",
+    "main.f12ad0db.css.map": "/loginauth/static/css/main.f12ad0db.css.map",
+    "main.2edfa01a.js.map": "/loginauth/static/js/main.2edfa01a.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f12ad0db.css",
+    "static/js/main.2edfa01a.js"
+  ]
+}
