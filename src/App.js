@@ -53,7 +53,7 @@ const AuthWrapper = ({ children }) => {
         console.log("Session expired, logging out automatically...");
         logout({
           logoutParams: {
-            returnTo: window.location.origin + "/#/login",
+            returnTo: window.location.origin + "/auth0/#/login",
           },
         });
       }, 300000);
