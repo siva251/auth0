@@ -1,4 +1,4 @@
-// src/App.js
+
 import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { HashRouter, Routes, Route, useNavigate } from "react-router-dom";
