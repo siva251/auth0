@@ -1,6 +1,6 @@
 # Getting Started with Create React App
 
-This project is React application that uses Redux Toolkit for state management and Tailwind for Cosmetics.
+This project is React application that uses Redux Toolkit for state management, React-Router for Routing and Tailwind for Cosmetics.
 
 ## Project Structure
 
